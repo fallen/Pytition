@@ -1537,7 +1537,14 @@ def slug_show_petition(request, orgslugname=None, username=None, petitionname=No
         except SlugModel.DoesNotExist:
             raise Http404(_("Sorry, we are not able to find this petition"))
         petition = slug.petition
-    sign_form = SignatureForm(petition=petition)
+
+    initial = None if not pytitionuser else {
+        'first_name': pytitionuser.user.first_name,
+        'last_name': pytitionuser.user.last_name,
+        'email': pytitionuser.user.email
+    }
+
+    sign_form = SignatureForm(petition=petition, initial=initial)
 
     ctx = {"user": pytitionuser, "petition": petition, "form": sign_form,
            'meta': petition_detail_meta(request, petition.id)}
