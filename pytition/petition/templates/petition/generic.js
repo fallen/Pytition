@@ -50,47 +50,34 @@ $(function () {
 
 $(function () {
    $('[data-action="publish"]').find('input:checkbox').on("change", function() {
+    var box = $(this);
+    var publish = box.prop('checked');
+    box.prop('checked', !publish);
     var petition_publish_url = $(this).closest("[data-petition-publish]").data("petition-publish");
     var petition_unpublish_url = $(this).closest("[data-petition-unpublish]").data("petition-unpublish");
-    var box = $(this);
-    var checked = box.prop('checked');
     var label = box.siblings('label');
     var custom_switch = box.closest('.custom-switch');
     box.prop('disabled', true);
-    if (checked) {
-        label.text("{% trans "Published" %}");
-        custom_switch.removeClass("text-danger");
-        custom_switch.addClass("text-success");
-        $.ajax(petition_publish_url
-        ).done(function(){
+    var loader_id = 'loader_to_remove_' + Math.round(Math.random() * 100);
+    $(`<div id=${loader_id} class="spinner-border spinner-border-sm ml-1" \
+        style="color: initial" role="status"><span class="sr-only">Loading...</span></div>`)
+           .insertAfter(label);
+    loader_id = '#' + loader_id;
+    $.ajax(publish ? petition_publish_url : petition_unpublish_url
+    ).done(function() {
+        var published = box.prop('checked');
+        label.text(published ? "{% trans "Not published" %}" : "{% trans "Published" %}");
+        box.prop('disabled', false);
+        box.prop('checked', !box.prop('checked'));
+        $(loader_id).remove();
+    }).fail(function () {
+        setTimeout(function() {
             box.prop('disabled', false);
-        }).fail(function () { // reset checkbox state upon failure
-            setTimeout(function(){
-                box.prop('checked', false);
-                label.text("{% trans "Not published" %}");
-                custom_switch.removeClass("text-success");
-                custom_switch.addClass("text-danger");
-                box.prop('disabled', false);
-            }, 1000);
-            //FIXME: show an alert message to the user about the failure
-        });
-    } else {
-        label.text("{% trans "Not published" %}");
-        custom_switch.removeClass("text-success");
-        custom_switch.addClass("text-danger");
-        $.ajax(petition_unpublish_url
-        ).done(function(){
-            box.prop('disabled', false);
-        }).fail(function () { // reset checkbox state upon failure
-            setTimeout(function() {
-                box.prop('checked', true);
-                label.text("{% trans "Published" %}");
-                custom_switch.removeClass("text-danger");
-                custom_switch.addClass("text-success");
-                box.prop('disabled', false);
-            }, 1000);
-            //FIXME: show an alert message to the user about the failure
-        });
-    }
+            $(loader_id).remove();
+            var action = box.prop('checked') ? 'unpublish' : 'publish';
+            if (!box.siblings("div.alert").length)
+                $(`<div class="alert alert-danger" role="alert">Failed to ${action} the petition, try to refresh the page</div>`).insertAfter(label);
+        }, 1000);
+    });
    });
 });

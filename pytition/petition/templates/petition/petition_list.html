@@ -40,7 +40,7 @@
             <p class="card-text">{{ petition.twitter_description|safe }}</p>
           {% endif %}
           <p class="text-muted">{{ petition.signature_number }} signatures</p>
-          <div class="custom-control custom-switch
+          <div class="petition-publish-switch custom-control custom-switch
                       {% if not petition.published %}
                           text-muted
                       {% else %}

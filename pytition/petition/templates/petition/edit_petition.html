@@ -29,6 +29,25 @@
 {% endblock main_title %}
 
 {% block edit_content %}
+<div data-petition-unpublish="{% url 'petition_unpublish' petition.id %}" data-petition-publish="{% url 'petition_publish' petition.id %}"
+    class="petition-publish-switch mb-4 custom-control custom-switch
+                       {% if not petition.published %}
+                       text-muted
+                       {% else %}
+                       text-success
+                       {% endif %}" data-action="publish">
+    <input type="checkbox" class="custom-control-input"
+                           name="petition_published_{{ petition.id }}"
+                           id="petition_published_{{ petition.id }}"
+                           {% if petition.published %} checked {% endif %}>
+    <label class="custom-control-label" for="petition_published_{{ petition.id }}">
+        {% if not petition.published %}
+        {% trans "Not published" %}
+        {% else %}
+        {% trans "Published" %}
+        {% endif %}
+    </label>
+</div>
 <div class="list-group list-group-horizontal mb-5" id="list-tab" role="tablist">
     <a href="#content_form" class="list-group-item list-group-item-info list-group-item-action"
     data-toggle="list" aria-controls="content_form" role="tab"><span class="oi oi-clipboard"></span> {% trans "Content" %}</a>

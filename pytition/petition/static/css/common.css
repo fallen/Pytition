@@ -31,3 +31,11 @@ nav.navbar {
 .petition-list-row {
   margin-top: 2em;
 }
+
+.petition-publish-switch input ~ label {
+    color: var(--red);
+}
+
+.petition-publish-switch input:checked ~ label {
+    color: var(--green);
+}
